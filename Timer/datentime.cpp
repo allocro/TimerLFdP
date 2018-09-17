@@ -26,7 +26,10 @@ void DateNTime::getTime(){
     struct tm *timeInts;
     timeInts = std::localtime(&tmpt); //laboriosi passaggi, ma unici che ho trovato per passare da chrono::time_point a tm
 
-    emit showTime(timeInts->tm_hour, timeInts->tm_min);
+    hour= timeInts->tm_hour;
+    min=timeInts->tm_min;
+
+    emit showTime(hour, min);
 }
 
 void DateNTime::getDate(){
@@ -35,5 +38,10 @@ void DateNTime::getDate(){
     struct tm *timeInts;
     timeInts = std::localtime(&tmpt);
 
-    emit showDate(timeInts->tm_mday, (timeInts->tm_mon +1), (timeInts->tm_year + 1900), timeInts->tm_wday);
+    day=timeInts->tm_mday;
+    month=(timeInts->tm_mon +1);
+    year=(timeInts->tm_year + 1900);
+    weekDay=timeInts->tm_wday;
+
+    emit showDate(day, month, year, weekDay);
 }

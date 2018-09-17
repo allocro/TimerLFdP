@@ -16,7 +16,8 @@ public:
     int min;
     int day;
     int month;
-    QString weekDay;
+    int year;
+    int weekDay;
 
 private:
     QTimer *timer;
