@@ -25,11 +25,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    counter.cpp
+    counter.cpp \
+    datentime.cpp
 
 HEADERS += \
         mainwindow.h \
-    counter.h
+    counter.h \
+    datentime.h
 
 FORMS += \
         mainwindow.ui

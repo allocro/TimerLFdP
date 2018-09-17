@@ -1,5 +1,7 @@
 #include "counter.h"
 #include <QTimer>
+#include <QIntValidator>
+
 
 Counter::Counter(QLineEdit *editSec, QLineEdit *editMin, QObject *parent) : QObject(parent)
 {   int count = 0;
@@ -7,6 +9,8 @@ Counter::Counter(QLineEdit *editSec, QLineEdit *editMin, QObject *parent) : QObj
     timer= new QTimer(this);
     setterSec=editSec;
     setterMin=editMin;
+    setterSec->setValidator(new QIntValidator(0, 59, this));
+    setterMin->setValidator(new QIntValidator(0, 59, this));
     connect(timer, &QTimer::timeout, this, &Counter::decCount);
 
 }

@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QIntValidator>
 #include <QTimer>
 #include "counter.h"
 #include <QDateTime>
 #include <QString>
+#include "datentime.h"
+#include <QAbstractButton>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,26 +13,62 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->minEdit->setValidator(new QIntValidator(0, 59, this));
-    ui->secEdit->setValidator(new QIntValidator(0, 59, this));
-    QDateTime dateTime = QDateTime::currentDateTime();
+    /* Spostati i parametri di valutazione di accettabilita' del timeSetter dalla
+     * main window e inseriti nell'instanziazione del timer(classe Counter) stesso
+     * per una maggiore compattezza della classe ed evitare possibili malfunzionamenti
+     * dovuti a modifiche della parte grafica dell'interfaccia
+     */
+    DateNTime *dateNTime= new DateNTime(this);
 
-    QTimer *timer = new QTimer(this);
-        //connect(timer, SIGNAL(timeout()), ui->currentClock, SLOT(display()));
-        timer->start(1000);
-
-    ui->dayOfWeek->setText(dateTime.toString("dddd"));
-    //ui->dayOfWeek->setAlignment(Qt::AlignCenter);
-    ui->currentClock->display(dateTime.toString("hh:mm"));
-    ui->dateClock->display(dateTime.toString("dd.MM"));
-    ui->yearClock->display(dateTime.toString("yyyy"));
-    QObject::connect(ui->usFormat, &QCheckBox::stateChanged,[=](int stateChanged){
-        if(!stateChanged)
-            ui->dateClock->display(dateTime.toString("dd.MM"));
-        else
-            ui->dateClock->display(dateTime.toString("MM.dd"));
-
+    QObject::connect(dateNTime, &DateNTime::showTime, [=](int hour, int min){
+        QString outString= QString::number(hour) + ":" + QString::number(min);
+        ui->currentClock->display(outString);
     });
+
+    QObject::connect(dateNTime, &DateNTime::showDate, [=](int d, int m, int y, int wd){
+        QString outString;
+        switch (wd) {
+        case 0:
+            outString="Sunday";
+            break;
+        case 1:
+            outString="Monday";
+            break;
+        case 2:
+            outString="Tuesday";
+            break;
+        case 3:
+            outString="Wednesday";
+            break;
+        case 4:
+            outString="Thursday";
+            break;
+        case 5:
+            outString="Friday";
+            break;
+        case 6:
+            outString="Saturday";
+            break;
+
+        }
+        ui->dayOfWeek->setText(outString);
+    });
+
+    QObject::connect(dateNTime, &DateNTime::showDate, [=](int d, int m){
+        if(!ui->usFormat->isChecked()){
+            QString outString= QString::number(d) + "." + QString::number(m);
+            ui->dateClock->display(outString);
+        } else{
+            QString outString= QString::number(m) + "." + QString::number(d);
+            ui->dateClock->display(outString);
+        }
+    });
+
+    QObject::connect(dateNTime, &DateNTime::showDate, [=](int d, int m, int y){
+        ui->yearClock->display(y);
+    });
+
+    QObject::connect(ui->usFormat, &QCheckBox::stateChanged, dateNTime, &DateNTime::getDate);
 
     Counter *counter= new Counter(ui->secEdit, ui->minEdit, this);
         QObject::connect(counter, SIGNAL(showCountSec(QString)), ui->timerDisplay, SLOT(display(QString)));
