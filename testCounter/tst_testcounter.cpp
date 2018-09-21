@@ -5,6 +5,7 @@
 #include <chrono>
 #include <stdio.h>
 #include <iostream>
+#include <QEventLoop>
 
 // add necessary includes here
 
@@ -23,53 +24,26 @@ public:
     ~testCounter();
 
 private slots:
-    void initTestCD();
-    void cleanupTestCD();
-    void testCountdown();
+    void testCountdown(int sec, int min, QThread *thread);
 
 };
 
 testCounter::testCounter() : QObject ()
 {   int i;
+    int testTimes = 1;
+    QThread*thread = new QThread();
     editSec= new QLineEdit();
     editMin= new QLineEdit();
     counter= new Counter(editSec, editMin);
-    for(i=0; i<=10; i++){
+    counter->moveToThread(thread);
+    QObject::connect(thread, SIGNAL(started()), counter, SLOT(start()));
+    for(i=0; i<=testTimes; i++){
         int randsec= rand() %60;
         int randmin= rand() %60;
-        randsec=3;
-        randmin=0; //Per motivi di tempo
 
-        QString randsecString= QString::number(randsec);
-        QString randminString= QString::number(randmin);
+        randmin = 0;//Per velocizzare il test
 
-
-        editSec->setText(randsecString);
-        editMin->setText(randminString);
-
-        counter->set();
-        std::cout << "Starting the Timer at " << (counter->count)/10 << "sec" <<std::endl;
-        auto start= std::chrono::system_clock::now();
-
-        counter->start();
-
-        while(counter->count>0){
-            std::cout <<counter->count <<std::endl;
-        }
-        auto end= std::chrono::system_clock::now();
-        counter->stop();
-
-        auto check= std::chrono::duration_cast<std::chrono::seconds>(end - start);
-        int checkInt= check.count();
-
-        if(checkInt==randsec+(randmin*60)){
-            std::cout << "Timer matches" <<std::endl;
-        }else{
-            std::cout << "Timer doesnt match" <<std::endl;
-            std::cout << "Sec counted: " << (counter->count)/10 <<std::endl;
-            std::cout << "Sec passed: " << checkInt <<std::endl;
-            break;
-        }
+        testCountdown(randsec, randmin, thread);
     }
 
 }
@@ -79,19 +53,38 @@ testCounter::~testCounter()
 
 }
 
-void testCounter::initTestCD()
+void testCounter::testCountdown(int sec, int min, QThread *thread)
 {
 
-}
+    QString randsecString= QString::number(sec);
+    QString randminString= QString::number(min);
 
-void testCounter::cleanupTestCD()
-{
 
-}
+    editSec->setText(randsecString);
+    editMin->setText(randminString);
 
-void testCounter::testCountdown()
-{
 
+    counter->set();
+    std::cout << "Starting the Timer at " << (counter->count)/10 << "sec" <<std::endl;
+
+
+    thread->start();
+    auto start= std::chrono::system_clock::now();
+
+    while(counter->count>0){
+    }
+    auto end= std::chrono::system_clock::now();
+
+    auto check= std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    int checkInt= check.count();
+
+    if(checkInt==sec+(min*60)){
+        std::cout << "Timer matches" <<std::endl;
+    }else{
+        std::cout << "Timer doesnt match" <<std::endl;
+        std::cout << "Sec counted: " << sec+(min*60) <<std::endl;
+        std::cout << "Sec passed: " << checkInt <<std::endl;
+    }
 }
 
 QTEST_MAIN(testCounter)

@@ -12,7 +12,7 @@ public:
     explicit Counter(QLineEdit *setterSec, QLineEdit *setterMin, QObject *parent = nullptr);
     int count;
 
-    QTimer *timer;
+    QTimer *timer = nullptr;
     QLineEdit *setterSec;
     QLineEdit *setterMin;
 
