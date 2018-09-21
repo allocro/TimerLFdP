@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <QEventLoop>
+#include <random>
 
 // add necessary includes here
 
@@ -38,7 +39,8 @@ testCounter::testCounter() : QObject ()
     counter->moveToThread(thread);
     QObject::connect(thread, SIGNAL(started()), counter, SLOT(start()));
     for(i=0; i<=testTimes; i++){
-        int randsec= rand() %60;
+        srand((unsigned)time(0));
+        int randsec = rand() %60;
         int randmin= rand() %60;
 
         randmin = 0;//Per velocizzare il test
