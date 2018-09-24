@@ -2,22 +2,20 @@
 #define COUNTER_H
 
 #include <QObject>
-#include <QTimer>
-#include <QLineEdit>
+class QTimer;
+class QLineEdit;
 
 class Counter : public QObject
 {
     Q_OBJECT
 public:
     explicit Counter(QLineEdit *setterSec, QLineEdit *setterMin, QObject *parent = nullptr);
-    int count;
-
-    QTimer *timer = nullptr;
+    QTimer *timer;
     QLineEdit *setterSec;
     QLineEdit *setterMin;
-
+    int count;
 signals:
-    void showCountSec(QString count);
+    void showCountSec(const QString &count);
     void showCountMin(int count);
 
 public slots:

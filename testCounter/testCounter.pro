@@ -4,8 +4,9 @@ CONFIG += qt warn_on depend_includepath testcase
 QT += widgets
 TEMPLATE = app
 
-SOURCES +=  tst_testcounter.cpp \
-    counter.cpp
+SOURCES +=  \
+    counter.cpp \
+    tst_counter.cpp
 
 HEADERS += \
     counter.h
